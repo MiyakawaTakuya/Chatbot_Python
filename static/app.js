@@ -64,6 +64,10 @@ function handleStartButtonClick() {
         // ニュースだったら、API経由でおすすめ記事を取得する.
         showRecommendArticle();
       
+      } else if (text.indexOf('ポケモン') !== -1) {
+        //ポケモンだったら、ポケモンの名前をランダムで一つ返す.
+        showRecommendArticle();
+      
       } else {
         // ニュース以外はわからないよ〜.
         let synthes = new SpeechSynthesisUtterance('ごめんなさい、ニュース以外はわかりません');
@@ -116,7 +120,7 @@ function startIntro() {
     return new Promise((resolve, reject) => {
 
         // let texts = "「おすすめニュースを教えて」と聞いてみてください。".split('');
-        let texts = "「おすすめニュースを教えて」と聞いてみてください。".split('');
+        let texts = "「おすすめニュース」か「ポケモンの名前」と聞いてみてください。".split('');
 
         function showMessage(texts, cb) {
             if (texts.length === 0) {

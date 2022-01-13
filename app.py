@@ -3,7 +3,9 @@ from urllib.request import urlopen
 from random import shuffle
 from flask import Flask, render_template
 from bs4 import BeautifulSoup
-
+import re
+from pprint import pprint
+  
 app = Flask(__name__)
 
 @app.route("/")
@@ -13,7 +15,6 @@ def index():
 
 @app.route("/api/recommend_article")
 def api_recommend_article():
-    """はてブのホットエントリーから記事を入手して、ランダムに1件返却します."""
     with urlopen("http://feeds.feedburner.com/hatena/b/hotentry") as res:
         html = res.read().decode("utf-8")
     soup = BeautifulSoup(html, "html.parser")
@@ -27,5 +28,13 @@ def api_recommend_article():
         "link": item.get('rdf:about')
     })
 
+@app.route("/api/zukan_pokemon")
+def api_pokemon_name():
+    with urlopen("https://zukan.pokemon.co.jp/") as res:
+        html = res.read().decode("utf-8")
+
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5003)
+    app.run(debug=True, port=5004)
+    #app.run(debug=True, port=5000)
