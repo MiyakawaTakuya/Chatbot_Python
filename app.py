@@ -32,7 +32,8 @@ def api_recommend_article():
 def api_pokemon_name():
     with urlopen("https://zukan.pokemon.co.jp/") as res:
         html = res.read().decode("utf-8")
-
+    soup = BeautifulSoup(html, "html.parser")
+    name = soup.select(".name__loadItem p") 
 
 
 if __name__ == "__main__":
