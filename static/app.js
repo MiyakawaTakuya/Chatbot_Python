@@ -70,7 +70,7 @@ function handleStartButtonClick() {
       
       } else {
         // ニュース以外はわからないよ〜.
-        let synthes = new SpeechSynthesisUtterance('ごめんなさい、ニュース以外はわかりません');
+        let synthes = new SpeechSynthesisUtterance('ごめんなさい、ポケモンかニュース以外はお伝えできません');
         synthes.lang = "ja-JP";
         speechSynthesis.speak(synthes);
       }
@@ -119,7 +119,6 @@ function startIntro() {
 
     return new Promise((resolve, reject) => {
 
-        // let texts = "「おすすめニュースを教えて」と聞いてみてください。".split('');
         let texts = "「おすすめニュース」か「ポケモンの名前」と聞いてみてください。".split('');
 
         function showMessage(texts, cb) {
