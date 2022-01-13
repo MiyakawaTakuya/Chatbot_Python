@@ -5,7 +5,11 @@ from flask import Flask, render_template
 from bs4 import BeautifulSoup
 import re
 from pprint import pprint
-  
+#seleniumを使う場合
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -30,10 +34,20 @@ def api_recommend_article():
 
 @app.route("/api/zukan_pokemon")
 def api_pokemon_name():
-    with urlopen("https://zukan.pokemon.co.jp/") as res:
-        html = res.read().decode("utf-8")
+    CHROMEDRIVER = "/Users/miyagawatakuya/Documents/chrome/chromedriver"
+    browser = webdriver.Chrome(CHROMEDRIVER)
+    browser.get("https://zukan.pokemon.co.jp/")
+    html = browser.page_source.encode('utf-8')
     soup = BeautifulSoup(html, "html.parser")
-    name = soup.select(".name__loadItem p") 
+    names = soup.find_all('p', class_="name__loadItem")
+    browser.quit()
+    names = [t.string for t in names]
+    return json.dumps({
+        "content" : names[3],
+        # "link" : item.find("link").string
+#        "link": item.get('rdf:about')
+    })
+#TODO 名前をランダムに取り出して詳細リンクを引っ張り出してretrunする
 
 
 if __name__ == "__main__":
