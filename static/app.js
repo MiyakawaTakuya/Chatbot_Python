@@ -66,7 +66,7 @@ function handleStartButtonClick() {
       
       } else if (text.indexOf('ポケモン') !== -1) {
         //ポケモンだったら、ポケモンの名前をランダムで一つ返す.
-        showRecommendArticle();
+        showPokemonDetails();
       
       } else {
         // ニュース以外はわからないよ〜.
@@ -97,6 +97,25 @@ function handleStopButtonClick() {
 function showRecommendArticle() {
 
     api('/api/recommend_article').then(response => {
+        let { content, link } = JSON.parse(response);
+        console.log(content);
+
+        content = content.split("-")[0];
+
+        let synthes = new SpeechSynthesisUtterance(content);
+        synthes.lang = "ja-JP";
+        speechSynthesis.speak(synthes);
+
+        document.getElementById('text').innerHTML = `<a href="${link}">${content}</a>`;
+    });
+}
+
+/**
+ * API経由でポケモンの情報を取得して、音声で発します.
+ */
+function showPokemonDetails() {
+
+    api('/api/pokemon_details').then(response => {
         let { content, link } = JSON.parse(response);
         console.log(content);
 

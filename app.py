@@ -1,14 +1,15 @@
-import json
+
 from urllib.request import urlopen
 from random import shuffle
 from flask import Flask, render_template
 from bs4 import BeautifulSoup
 import re
 from pprint import pprint
+import json
+import time
 #seleniumを使う場合
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
 
 app = Flask(__name__)
 
@@ -27,27 +28,36 @@ def api_recommend_article():
     item = items[0]
     print(item)
     return json.dumps({
-        "content" : item.find("title").string,
+        "content" : item.find("title").string, #titleはHTMLタグの名前
         # "link" : item.find("link").string
         "link": item.get('rdf:about')
     })
 
-@app.route("/api/zukan_pokemon")
+@app.route('/api/pokemon_details')
 def api_pokemon_name():
     CHROMEDRIVER = "/Users/miyagawatakuya/Documents/chrome/chromedriver"
     browser = webdriver.Chrome(CHROMEDRIVER)
     browser.get("https://zukan.pokemon.co.jp/")
     html = browser.page_source.encode('utf-8')
     soup = BeautifulSoup(html, "html.parser")
-    names = soup.find_all('p', class_="name__loadItem")
+    time.sleep(5)
+    li = soup.find_all('li', class_="loadItem")
+    li = [t.string for t in li]
+    shuffle(li)
+    li_ = li[0]
+    print(li_)
+    time.sleep(5)
+    a = li_.find("p", class_="name__loadItem").string
     browser.quit()
-    names = [t.string for t in names]
+    # print(li)
+    
     return json.dumps({
-        "content" : names[3],
-        # "link" : item.find("link").string
-#        "link": item.get('rdf:about')
+        # "content" : li_.select("a > p").string,
+        "content" : a,
+        # "content" : li_.find(class_="name__loadItem").string,
+        # "content" : li_.get('alt'),
+        "link": li_.get('href')
     })
-#TODO 名前をランダムに取り出して詳細リンクを引っ張り出してretrunする
 
 
 if __name__ == "__main__":
