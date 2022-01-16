@@ -9,7 +9,7 @@ import requests
 import json
 import time
 import lxml
-# import chromedriver_binary
+import chromedriver_binary
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -32,6 +32,33 @@ def api_recommend_article():
     return json.dumps({
         "content" : item.find("title").string, #titleはHTMLタグの名前
         "link": item.get('rdf:about')
+    })
+
+@app.route('/api/architecture_news')
+def api_architecture_news():
+    # CHROMEDRIVER = "/Users/miyagawatakuya/Documents/chrome/chromedriver"
+    # browser = webdriver.Chrome(CHROMEDRIVER)
+    # browser.get("https://architecturephoto.net/")
+    opts = Options()
+    opts.headless = True
+    browser = webdriver.Chrome(options=opts)
+    browser.get("https://architecturephoto.net/")
+    time.sleep(5)
+    html = browser.page_source.encode('utf-8')
+    time.sleep(3)
+    soup = BeautifulSoup(html, "html.parser")
+    titles = soup.select('body > div#wrapper > div > div > main > div article > section h1 a.pjax')
+    titles = [t for t in titles if "【ap job更新】" not in t.string ]
+    # browser.quit()
+    shuffle(titles)
+    title = titles[0]
+    content = title.string.replace('\t','')
+    pprint(content)
+    link = title.get('href')
+    pprint(link)
+    return json.dumps({
+        "content" : content, 
+        "link": link
     })
 
 @app.route('/api/pokemon_details')

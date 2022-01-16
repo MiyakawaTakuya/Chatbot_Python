@@ -60,9 +60,13 @@ function handleStartButtonClick() {
         return;
       }
 
-      if (text.indexOf('ニュース') !== -1) {
+      if (text.indexOf('ただのニュース') !== -1 && text.indexOf('建築') === -1) {
         // ニュースだったら、API経由でおすすめ記事を取得する.
         showRecommendArticle();
+      
+      } else if (text.indexOf('建築') !== -1 && text.indexOf('ただのニュース') === -1) {
+        //建築だったら、建築ニュースをランダムで一つ返す.
+        showArchitectureNews();
       
       } else if (text.indexOf('ポケモン') !== -1) {
         //ポケモンだったら、ポケモンの名前をランダムで一つ返す.
@@ -70,7 +74,7 @@ function handleStartButtonClick() {
       
       } else {
         // ニュース以外はわからないよ〜.
-        let synthes = new SpeechSynthesisUtterance('ごめんなさい、ポケモンかニュース以外はお伝えできません');
+        let synthes = new SpeechSynthesisUtterance('ごめんなさい、建築に関するニュースか普通のニュース以外はお伝えできません');
         synthes.lang = "ja-JP";
         speechSynthesis.speak(synthes);
       }
@@ -97,6 +101,25 @@ function handleStopButtonClick() {
 function showRecommendArticle() {
 
     api('/api/recommend_article').then(response => {
+        let { content, link } = JSON.parse(response);
+        console.log(content);
+
+        content = content.split("-")[0];
+
+        let synthes = new SpeechSynthesisUtterance(content);
+        synthes.lang = "ja-JP";
+        speechSynthesis.speak(synthes);
+
+        document.getElementById('text').innerHTML = `<a href="${link}">${content}</a>`;
+    });
+}
+
+/**
+ * API経由で建築ニュース情報を取得して、音声で発します.
+ */
+function showArchitectureNews() {
+
+    api('/api/architecture_news').then(response => {
         let { content, link } = JSON.parse(response);
         console.log(content);
 
@@ -138,7 +161,7 @@ function startIntro() {
 
     return new Promise((resolve, reject) => {
 
-        let texts = "「おすすめニュース」か「ポケモンの名前」と聞いてみてください。".split('');
+        let texts = "「最近の建築について」か「ただのニュース」と聞いてみてください。".split('');
 
         function showMessage(texts, cb) {
             if (texts.length === 0) {
